@@ -1,0 +1,3 @@
+[submodule "jva-bse-srv"]
+	path = jva-bse-srv
+	url = https://github.com/ddalpra/jva-bse-srv.git
