@@ -8,15 +8,18 @@ services:
 
   # ── PostgreSQL per Keycloak ─────────────────────────────────────────────────
   postgres-kc:
-    image: docker.io/postgres:16-alpine
+    image: quay.io/fedora/postgresql-18:latest
     container_name: ticketing-postgres-kc
     restart: unless-stopped
     environment:
-      POSTGRES_DB: keycloak
-      POSTGRES_USER: keycloak
-      POSTGRES_PASSWORD: keycloak_secret
+      POSTGRESQL_DATABASE: keycloak
+      POSTGRESQL_USER: keycloak
+      POSTGRESQL_PASSWORD: keycloak_secret
+      POSTGRESQL_ADMIN_PASSWORD: admin_secret
     volumes:
-      - postgres-kc-data:/var/lib/postgresql/data
+      - ./pgs-kc:/var/lib/pgsql/data:Z,U
+    ports:
+      - "5432:5432"
     networks:
       - ticketing-net
     healthcheck:
@@ -27,17 +30,18 @@ services:
 
   # ── PostgreSQL per l'applicazione ───────────────────────────────────────────
   postgres-app:
-    image: docker.io/postgres:16-alpine
+    image: quay.io/fedora/postgresql-18:latest
     container_name: ticketing-postgres-app
     restart: unless-stopped
     environment:
-      POSTGRES_DB: ticketing
-      POSTGRES_USER: ticketing
-      POSTGRES_PASSWORD: ticketing_secret
+      POSTGRESQL_DATABASE: ticketing
+      POSTGRESQL_USER: ticketing
+      POSTGRESQL_PASSWORD: ticketing_secret
+      POSTGRESQL_ADMIN_PASSWORD: admin_secret
     ports:
       - "5433:5432"
     volumes:
-      - postgres-app-data:/var/lib/postgresql/data
+      - ./pgs-app:/var/lib/pgsql/data:Z,U
     networks:
       - ticketing-net
     healthcheck:
@@ -48,7 +52,7 @@ services:
 
   # ── Keycloak ────────────────────────────────────────────────────────────────
   keycloak:
-    image: quay.io/keycloak/keycloak:26.6.3
+    image: quay.io/keycloak/keycloak:26.7.0
     container_name: ticketing-keycloak
     restart: unless-stopped
     command: start-dev
@@ -57,7 +61,8 @@ services:
       KC_DB_URL: jdbc:postgresql://postgres-kc:5432/keycloak
       KC_DB_USERNAME: keycloak
       KC_DB_PASSWORD: keycloak_secret
-      KC_HOSTNAME: 172.127.29.202
+      #KC_HOSTNAME: 172.127.29.202
+      KC_HOSTNAME_STRICT: "false"
       KC_HTTP_ENABLED: "true"
       KC_HTTP_PORT: 8180
       KEYCLOAK_ADMIN: admin
@@ -85,9 +90,6 @@ services:
     networks:
       - ticketing-net
     depends_on:
-      keycloak
+      keycloak:
+        condition: service_healthy
     command: ["run", "-c", "/etc/krakend/krakend.json"]
-
-volumes:
-  postgres-kc-data:
-  postgres-app-data:
