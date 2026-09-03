@@ -93,3 +93,4 @@ services:
       keycloak:
         condition: service_healthy
     command: ["run", "-c", "/etc/krakend/krakend.json"]
+
