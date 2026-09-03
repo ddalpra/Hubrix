@@ -1,3 +1,6 @@
 [submodule "jva-bse-srv"]
 	path = jva-bse-srv
 	url = https://github.com/ddalpra/jva-bse-srv.git
+[submodule "ng-ui-srv"]
+	path = ng-ui-srv
+	url = https://github.com/ddalpra/ng-ui-srv.git
