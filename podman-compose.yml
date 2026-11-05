@@ -38,21 +38,23 @@ services:
   # ------------------------------------------------------
   # CORE MICROSERVICE (Quarkus + Angular)
   # ------------------------------------------------------
-  #hubrix-core-db:
-  #  image: postgres:18-bookworm
-  #  container_name: hubrix-core-db
-  #  environment:
-  #    POSTGRES_DB: core_db
-  #    POSTGRES_USER: core_user
-  #    POSTGRES_PASSWORD: core_password
-  #  volumes:
-  #    - core_db_data:/var/lib/postgresql/data
-  #  networks:
-  #    - core-net
-  #  restart: always
+  hubrix-core-db:
+    image: postgres:18-bookworm
+    container_name: hubrix-core-db
+    environment:
+      POSTGRES_DB: core_db
+      POSTGRES_USER: core_user
+      POSTGRES_PASSWORD: core_password
+    volumes:
+      - core_db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - core-net
+    restart: always
 
   #hubrix-core-app:
-  #  build:
+  #     build:
   #    context: ./hubrix-core
   #    dockerfile: Dockerfile
   #  container_name: hubrix-core-app
